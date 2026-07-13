@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Household Search — Snapshot v11 — Jul 12, 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #f0efe9;
+    --paper-raised: #f8f7f3;
+    --ink: #23241f;
+    --ink-soft: #5a5a52;
+    --hairline: #d7d5c9;
+    --pine: #2f5233;
+    --pine-bg: #e3ebe1;
+    --amber: #a86a1f;
+    --amber-bg: #f3e6cf;
+    --slate: #83837a;
+    --slate-bg: #e7e6de;
+    --blue: #3d5a75;
+    --blue-bg: #dfe6ea;
+    --brick: #9c3b2c;
+    --brick-bg: #f2ded9;
+    --focus: #1f5aa6;
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important; transition:none!important;}
+  }
+
+  a{color:inherit;}
+  :focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
+
+  /* ---------- Header / case-file stamp ---------- */
+  header{
+    max-width:1180px;
+    margin:0 auto;
+    padding:48px 28px 28px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-optical-sizing:auto;
+    font-size:clamp(30px, 5vw, 46px);
+    line-height:1.05;
+    margin:0 0 8px;
+    letter-spacing:-.01em;
+  }
+  .subhead{
+    font-size:15px;
+    color:var(--ink-soft);
+    max-width:640px;
+    margin:0 0 22px;
+  }
+  .stamp{
+    position:absolute;
+    top:38px;
+    right:28px;
+    border:1.5px solid var(--brick);
+    color:var(--brick);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:9px 14px;
+    transform:rotate(2.5deg);
+    border-radius:2px;
+    background:rgba(156,59,44,.03);
+  }
+  .stamp b{display:block; font-size:13px; letter-spacing:.04em; margin-bottom:2px;}
+  @media (max-width: 720px){
+    .stamp{position:static; display:inline-block; transform:rotate(-1deg); margin-bottom:18px;}
+  }
+
+  .snapshot-note{
+    font-size:13px;
+    color:var(--ink-soft);
+    border-left:2px solid var(--hairline);
+    padding-left:12px;
+    max-width:640px;
+  }
+
+  /* ---------- Stat strip ---------- */
+  .stats{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 28px 32px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+  }
+  .stat{
+    background:var(--paper-raised);
+    padding:16px 18px;
+  }
+  .stat .n{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:26px;
+    font-weight:600;
+    display:block;
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .stat .l{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 28px 20px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .chip-group{display:flex; flex-wrap:wrap; gap:6px;}
+  .chip{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:12.5px;
+    font-weight:500;
+    padding:6px 12px;
+    border:1px solid var(--hairline);
+    background:var(--paper-raised);
+    border-radius:999px;
+    cursor:pointer;
+    color:var(--ink-soft);
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .chip:hover{border-color:var(--ink-soft);}
+  .chip.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper-raised);
+  }
+  .chip.toggle-chip{
+    border-color:var(--pine);
+    color:var(--pine);
+    background:var(--pine-bg);
+  }
+  .chip.toggle-chip.active{
+    background:var(--pine);
+    border-color:var(--pine);
+    color:var(--paper-raised);
+  }
+  .chip.toggle-chip:not(.active){
+    background:var(--paper-raised);
+    border-color:var(--hairline);
+    color:var(--ink-soft);
+  }
+  .toolbar-divider{width:1px; height:20px; background:var(--hairline); margin:0 4px;}
+  select{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:12.5px;
+    padding:6px 10px;
+    border:1px solid var(--hairline);
+    background:var(--paper-raised);
+    border-radius:6px;
+    color:var(--ink);
+  }
+  #searchBox{
+    font-family:'IBM Plex Sans', sans-serif;
+    font-size:13px;
+    padding:8px 14px;
+    border:1.5px solid var(--ink);
+    background:var(--paper-raised);
+    border-radius:6px;
+    color:var(--ink);
+    width:100%;
+    max-width:340px;
+  }
+  #searchBox::placeholder{color:var(--ink-soft);}
+  #searchBox.has-match{border-color:var(--pine);}
+  #searchBox.no-match{border-color:var(--brick);}
+  .search-hint{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    padding:2px 0 0 2px;
+  }
+  .search-hint.found{color:var(--pine);}
+  .search-hint.notfound{color:var(--brick);}
+  .count-note{
+    margin-left:auto;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- Table ---------- */
+  .table-wrap{
+    max-width:1460px;
+    margin:0 auto 60px;
+    padding:0 28px;
+    overflow-x:auto;
+    position:relative;
+  }
+  /* Sticky first column: listing name stays visible while swiping sideways */
+  tbody td:first-child{
+    position:sticky; left:0; z-index:2;
+    background:var(--paper-raised);
+    box-shadow:2px 0 4px rgba(0,0,0,0.06);
+  }
+  thead th:first-child{
+    position:sticky; left:0; z-index:3;
+    box-shadow:2px 0 4px rgba(0,0,0,0.12);
+  }
+  .scroll-hint{display:none; text-align:center; font-size:12px; color:var(--ink-soft); padding:6px 0 10px; font-style:italic;}
+  @media (max-width:1320px){
+    .scroll-hint{display:block;}
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:1240px;
+    background:var(--paper-raised);
+  }
+  thead th{
+    position:sticky;
+    top:0;
+    background:var(--ink);
+    color:var(--paper);
+    text-align:left;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-weight:600;
+    padding:10px 12px;
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+    z-index:2;
+  }
+  thead th:hover{background:#3a3b34;}
+  thead th .arrow{opacity:.5; font-size:10px; margin-left:3px;}
+  thead th.sorted .arrow{opacity:1;}
+
+  tbody tr{border-bottom:1px solid var(--hairline);}
+  tbody tr:hover{background:#eae8e0;}
+  tbody tr:hover td:first-child{background:#eae8e0;}
+  tbody tr.row-hidden{display:none;}
+  td{padding:12px; vertical-align:top; font-size:13.5px;}
+
+  .addr{font-weight:600; font-size:14px;}
+  .addr .building{display:block; font-weight:400; font-size:12px; color:var(--ink-soft); margin-top:1px;}
+  .neigh{font-size:11.5px; color:var(--ink-soft); margin-top:2px;}
+
+  .badge{
+    display:inline-block;
+    font-size:11px;
+    font-weight:600;
+    padding:3px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .badge.strong-lead{background:var(--pine-bg); color:var(--pine);}
+  .badge.contender{background:var(--blue-bg); color:var(--blue);}
+  .badge.concern-flagged{background:var(--amber-bg); color:var(--amber);}
+  .badge.awaiting-info{background:var(--slate-bg); color:var(--slate);}
+  .badge.rejected{background:var(--slate-bg); color:var(--slate); text-decoration:line-through; text-decoration-thickness:1px;}
+  .badge.action-badge{background:var(--brick-bg); color:var(--brick); margin-top:5px; display:block; width:fit-content;}
+  .badge.bedfit-badge{background:var(--amber-bg); color:var(--amber); margin-top:5px; display:block; width:fit-content;}
+
+  .type-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    border:1px solid var(--hairline);
+    padding:1px 5px;
+    border-radius:3px;
+    color:var(--ink-soft);
+  }
+
+  .num{font-family:'IBM Plex Mono', monospace; font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .num.dim{color:var(--ink-soft);}
+
+  .req{
+    display:flex;
+    gap:4px;
+  }
+  .req-tick{
+    width:20px; height:20px;
+    border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    font-weight:600;
+    flex-shrink:0;
+  }
+  .req-tick.ok{background:var(--pine-bg); color:var(--pine);}
+  .req-tick.fail{background:var(--brick-bg); color:var(--brick);}
+  .req-tick.unk{background:var(--slate-bg); color:var(--slate);}
+
+  /* Signature element: school report strip */
+  .report-strip{display:flex; flex-direction:column; gap:3px; min-width:150px;}
+  .report-line{display:flex; align-items:baseline; gap:6px; font-size:11.5px;}
+  .report-line .lvl{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    width:14px;
+    flex-shrink:0;
+  }
+  .report-line .mark{
+    width:7px; height:7px;
+    border-radius:50%;
+    flex-shrink:0;
+    margin-top:1px;
+  }
+  .mark.excellent{background:var(--pine);}
+  .mark.good{background:#5b8c5a;}
+  .mark.mid{background:var(--amber);}
+  .mark.weak{background:var(--brick);}
+  .mark.none{background:var(--hairline);}
+  .report-line .name{color:var(--ink); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .report-line .score{font-family:'IBM Plex Mono', monospace; color:var(--ink-soft); flex-shrink:0; white-space:nowrap;}
+
+  .mosque-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .mosque-badge .dot{width:7px; height:7px; border-radius:50%; flex-shrink:0;}
+  .mosque-badge .dot.near{background:var(--pine);}
+  .mosque-badge .dot.far{background:var(--amber);}
+  .mosque-name{font-size:11px; color:var(--ink-soft); display:block; margin-top:2px; max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+  .notes-cell{width:280px; min-width:240px; max-width:280px; font-size:12.5px; color:var(--ink-soft); line-height:1.45;}
+  .notes-cell.expandable{cursor:pointer;}
+  .notes-cell .full{display:none;}
+  .notes-cell.open .full{display:block; max-height:230px; overflow-y:auto; padding-right:6px;}
+  .notes-cell.open .truncated{display:none;}
+  .notes-cell .more{color:var(--blue); font-weight:600; font-size:11.5px; margin-top:4px;}
+  th.col-notes, td.col-notes{width:300px; min-width:260px;}
+
+  .src-link{
+    font-size:11.5px;
+    color:var(--blue);
+    text-decoration:none;
+    border-bottom:1px solid transparent;
+  }
+  .src-link:hover{border-bottom-color:var(--blue);}
+
+  footer{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 28px 60px;
+    font-size:12px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--hairline);
+    padding-top:20px;
+  }
+  footer p{max-width:640px;}
+
+  @media (max-width: 640px){
+    header{padding:32px 16px 20px;}
+    .stats{padding:0 16px 24px;}
+    .toolbar{padding:0 16px 16px;}
+    .table-wrap{padding:0 16px 40px;}
+    footer{padding:0 16px 40px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="stamp"><b>Snapshot v11</b>Jul 12, 2026 · 7:55 PM ET · 34 listings</div>
+  <p class="eyebrow">Household relocation file — Toronto</p>
+  <h1>The Search, at a Glance</h1>
+  <p class="subhead">3BR · 1.5 bath minimum · 1,000 sq ft minimum · Scarborough preferred, strong listings elsewhere considered. Generated on request from the live tracking workbook — not a live view.</p>
+  <p class="snapshot-note">This is a dated export, frozen at the moment it was generated. New listings, calls, and tours since this date won't appear here — ask for a fresh snapshot any time.</p>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<section class="toolbar">
+  <div style="display:flex; flex-direction:column;">
+    <input type="text" id="searchBox" placeholder="Search by address — check before you log a new one…" autocomplete="off">
+    <span class="search-hint" id="searchHint"></span>
+  </div>
+  <div class="chip-group" id="statusChips"></div>
+  <button class="chip toggle-chip active" id="hideRejectedToggle" type="button">Hide rejected</button>
+  <div class="toolbar-divider"></div>
+  <select id="sortSelect">
+    <option value="priority">Sort: Priority (best first)</option>
+    <option value="price-asc">Sort: Price ↑</option>
+    <option value="price-desc">Sort: Price ↓</option>
+    <option value="sqft-desc">Sort: Sq Ft ↑</option>
+    <option value="mosque-asc">Sort: Mosque walk ↑</option>
+    <option value="verified-asc">Sort: Last verified (stalest first)</option>
+    <option value="added-desc">Sort: Date added (newest first)</option>
+    <option value="address-asc">Sort: Address A–Z</option>
+  </select>
+  <select id="sqftFilter">
+    <option value="all">Any size</option>
+    <option value="1000">1,000 sq ft +</option>
+    <option value="1200">1,200 sq ft +</option>
+  </select>
+  <select id="reqFilter">
+    <option value="all">All requirement states</option>
+    <option value="allok">Passes all 3 hard minimums</option>
+    <option value="anyfail">Fails at least one minimum</option>
+  </select>
+  <select id="actionFilter">
+    <option value="all">Any follow-up state</option>
+    <option value="needsaction">Needs action</option>
+  </select>
+  <select id="quadrantFilter">
+    <option value="all">Any quadrant</option>
+    <option value="NW">NW</option>
+    <option value="NE">NE</option>
+    <option value="SW">SW</option>
+    <option value="SE">SE</option>
+  </select>
+  <select id="mosqueFilter">
+    <option value="all">Any mosque distance</option>
+    <option value="20">Within 20 min walk</option>
+    <option value="10">Within 10 min walk</option>
+  </select>
+  <select id="bedFitFilter">
+    <option value="all">Any bed-fit state</option>
+    <option value="concern">Bed-fit concern noted</option>
+    <option value="clean">No bed-fit concern noted</option>
+  </select>
+  <span class="count-note" id="countNote"></span>
+</section>
+
+<div class="table-wrap">
+<div class="scroll-hint">Swipe sideways to see all columns →</div>
+<table>
+  <thead>
+    <tr>
+      <th data-key="Address">Listing<span class="arrow">↕</span></th>
+      <th data-key="Status">Status<span class="arrow">↕</span></th>
+      <th data-key="Price /mo">Rent<span class="arrow">↕</span></th>
+      <th data-key="Sq Ft">Sq Ft<span class="arrow">↕</span></th>
+      <th data-key="Bedrooms">Bed/Bath<span class="arrow">↕</span></th>
+      <th>Min. Req.</th>
+      <th data-key="Neighbourhood">Area<span class="arrow">↕</span></th>
+      <th data-key="Date Added">Added<span class="arrow">↕</span></th>
+      <th>Schools</th>
+      <th>Mosque</th>
+      <th class="col-notes">Notes</th>
+    </tr>
+  </thead>
+  <tbody id="tbody"></tbody>
+</table>
+</div>
+
+<footer>
+  <p><strong>Reading the school marks:</strong> each dot is a Fraser Institute reading — pine green (7.5–10 / top tier), sage (5.5–7.4 / solid), amber (3.5–5.4 / below average), brick (0–3.4 / serious concern), grey (score not yet confirmed). Elem / Int / Sec follow the catchment order.</p>
+  <p><strong>Min. Req. ticks</strong> read left to right as Bedrooms ≥ 3, Bathrooms ≥ 1.5, Sq Ft ≥ 1,000 — green check, brick cross, or grey dash where data isn't confirmed yet.</p>
+  <p><strong>Sorting:</strong> the dropdown defaults to Priority — Strong lead first, then Contender, Concern flagged, Awaiting info, Rejected. Click any column header to sort by that column instead; click again to reverse. <strong>Hide rejected</strong> is on by default — toggle it off to see everything, including dead ends kept on file so they aren't re-investigated. <strong>Needs action</strong> filters to listings that are Awaiting info or still have an open question — a running to-do list. <strong>Bed-fit concern</strong> filters to listings where a room was actually found too narrow for the twin+full bed test — not listings where the test just hasn't been run yet. <strong>Mosque distance</strong> filters to a walking-time cutoff. The <strong>Added</strong> column and its sort option track when each listing entered the tracker.</p>
+  <p>Source: household-search-tracker.xlsx. For anything that needs to change, keep sharing listings in chat — this file stays a point-in-time record, not the working copy.</p>
+</footer>
+
+<script>
+const DATA = [{"Address": "12 Goldfinch Ct", "Building": "Sandringham House", "Type (A/H)": "A", "Neighbourhood": "North York — Bathurst/Finch W.", "Quadrant": "NW", "Status": "Strong lead", "Price /mo": 2690, "Sq Ft": 1368, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": "1 month FREE on a 13-month lease", "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "No - 24hr shared laundry facility", "Parking": "Yes - indoor and outdoor parking available", "Toured": false, "Source URL": "https://www.sterlingkaramar.com/apartments-for-rent/sandringham-house", "Last Verified": "2026-07-11", "Elementary School": "Yorkview Public School", "Elementary Snapshot": null, "Intermediate School": "Charles H Best Junior Middle School", "Intermediate Snapshot": null, "Secondary School": "Northview Heights Secondary School", "Secondary Snapshot": null, "Nearest Mosque": "Al Bukhari Community Centre", "Mosque Walk Time": "~26 min (1.65 km) ⚠️ over 20 min", "Notes": "Anchor listing for the Bathurst/Finch W. catchment. Sq ft corrected to 1,368 (confirmed via listing image filename). Floor plan image (SVG) could not be read — room dimensions still needed for the twin+full bed-fit test. Heat and hot water included in rent (hydro extra, per earlier discussion). 24-hr laundry facility (not in-suite), convenience store, controlled access, on-site mgmt, 24-hr emergency service. Wood flooring, private balcony, additional storage available. Child assignment: Haytham and Hadeya would attend Yorkview Public School (Gr. JK-05). Hashim, Hadeya, and Hana would attend Charles H Best Junior Middle School (Gr. 04-08). PRICE UPDATE: current rent confirmed at $2,690/mo (was logged as $2,500).", "Open Questions": null, "Date Added": null}, {"Address": "856B Millwood Rd", "Building": null, "Type (A/H)": null, "Neighbourhood": "Leaside", "Quadrant": null, "Status": "Rejected", "Price /mo": 2750, "Sq Ft": null, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": "RE/MAX Hallmark", "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": "2026-07-11", "Elementary School": "Rolph Road Elementary", "Elementary Snapshot": null, "Intermediate School": "Bessborough Drive Elementary and Middle School", "Intermediate Snapshot": null, "Secondary School": "Leaside High School", "Secondary Snapshot": null, "Nearest Mosque": "Masjid Darussalam", "Mosque Walk Time": "~18 min (1.18 km) ✅ within 20 min", "Notes": "MLS# C13466132. Triplex. Hydro tenant-paid. Laundry via stairwell, not in-unit. 0 parking. Exceptional school catchment justifies the Scarborough exception. PRICE DROP confirmed 2026-07-06: reduced from $2,995/mo to $2,750/mo (-$245/mo). SCHOOL UPDATE: Bessborough Drive Elementary and Middle School (JK-08), 10 min walk, resolves the Gr 7-8 gap — Bessborough covers JK through Grade 8, so it can serve as an alternative to Rolph Road (JK-6) for the full elementary+middle span, or specifically cover grades 7-8 for children who did Rolph Road through Gr 6. Overall rating 9.9/10 (2024), up from 7.3 (2023) and 8.8 (2022) - strong recent improvement. Gr3 2024-25: Reading 97%, Math 90%, Writing 83% at/above provincial standard. Gr6 2024-25: Reading 93%, Math 80%, Writing 93% at/above provincial standard. TDSB: https://www.tdsb.on.ca/FindYour/Schools/schno/1412 REJECTED 2026-07-11: spoke directly with realtor, who described the unit in a way that made clear it is unsuitable for the household needs (details not fully specified).", "Open Questions": "Does \"3+2BD\" mean 5 usable bedrooms or 3BR+2 flex rooms? Which end of 700-1,100 sq ft range applies?", "Date Added": null}, {"Address": "205 Morningside Ave", "Building": null, "Type (A/H)": null, "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Contender", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Masjid Ali", "Mosque Walk Time": "~6 min (0.35 km) ✅ within 20 min", "Notes": "Good neighbourhood/schools/shopping. Concern about children's room size and storage.", "Open Questions": null, "Date Added": null}, {"Address": "1441 Lawrence Ave E", "Building": "Summit Place", "Type (A/H)": "A", "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Contender", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": "1 month free", "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Qur'an & Sunnah Society of Canada Masjid", "Mosque Walk Time": "~14 min (0.9 km) ✅ within 20 min", "Notes": "Good utility package. Building reviews (dated ~2012) cited security/maintenance concerns — needs in-person verification.", "Open Questions": null, "Date Added": null}, {"Address": "20 Graydon Hall Dr", "Building": null, "Type (A/H)": "A", "Neighbourhood": null, "Quadrant": null, "Status": "Concern flagged", "Price /mo": 2979, "Sq Ft": 1193, "Bedrooms": null, "Bathrooms": 2, "3BR Min": "–", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Abu Huraira Centre", "Mosque Walk Time": "~22 min (1.41 km) ⚠️ over 20 min", "Notes": "Highest price on list. Bedroom 3 narrowly fails the twin+full bed width test.", "Open Questions": null, "Date Added": null}, {"Address": "2250 Kennedy Rd", "Building": null, "Type (A/H)": "A", "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Awaiting info", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Namira Masjid", "Mosque Walk Time": "~13 min (0.83 km) ✅ within 20 min", "Notes": "Available September. Blind-commit risk flagged.", "Open Questions": null, "Date Added": null}, {"Address": "301 Prudential Dr", "Building": null, "Type (A/H)": "H", "Neighbourhood": null, "Quadrant": null, "Status": "Awaiting info", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": 1, "3BR Min": "–", "1.5BA Min": "Below min", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Masjid Abu Bakr / Jame Abu Bakr Siddique", "Mosque Walk Time": "~9 min (0.55 km) ✅ within 20 min", "Notes": "Condo. AI answering system reached. 1 bathroom is a concern.", "Open Questions": null, "Date Added": null}, {"Address": "2460 Keele St", "Building": null, "Type (A/H)": "A", "Neighbourhood": "West end", "Quadrant": null, "Status": "Awaiting info", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": 1, "3BR Min": "–", "1.5BA Min": "Below min", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Mevlana Masjid", "Mosque Walk Time": "~27 min (1.72 km) ⚠️ over 20 min", "Notes": "Voicemail left. West end location and 1 bathroom are concerns. Cheapest effective rent on the list.", "Open Questions": null, "Date Added": null}, {"Address": "11 Leeswood Crescent", "Building": null, "Type (A/H)": null, "Neighbourhood": "Agincourt North", "Quadrant": null, "Status": "Rejected", "Price /mo": 2000, "Sq Ft": null, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Agincourt Muslim Association", "Mosque Walk Time": "~48 min (3.05 km) ⚠️ over 20 min", "Notes": "MLS# E13490334. Basement apartment. Top-tier candidate. Realtor contacted. REJECTED after speaking with the realtor: smaller rooms are not big enough (consistent with the twin+full bed-fit concern), AND the owner does not want a family with several young children in the unit. The second reason is a hard disqualifier regardless of room size — not something that can be negotiated around.", "Open Questions": null, "Date Added": null}, {"Address": "35 David Salomon Dr", "Building": "Preston Living", "Type (A/H)": "A", "Neighbourhood": "Flemingdon Park", "Quadrant": null, "Status": "Concern flagged", "Price /mo": null, "Sq Ft": 1320, "Bedrooms": null, "Bathrooms": 2, "3BR Min": "–", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": "Grenoble Public School", "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Darul Khair Islamic Centre (35 St Dennis Dr)", "Mosque Walk Time": "~6 min (0.36 km) ✅ within 20 min", "Notes": "Toured. Spacious, new, pool. Demoted due to Flemingdon Park neighbourhood safety concerns and school quality uncertainty.", "Open Questions": null, "Date Added": null}, {"Address": "35 Greenbrae Circuit", "Building": null, "Type (A/H)": "A", "Neighbourhood": null, "Quadrant": null, "Status": "Rejected", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": 1, "3BR Min": "–", "1.5BA Min": "Below min", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Garbage smell, flies, poor condition.", "Open Questions": null, "Date Added": null}, {"Address": "Cando Apartments", "Building": null, "Type (A/H)": "A", "Neighbourhood": null, "Quadrant": null, "Status": "Rejected", "Price /mo": null, "Sq Ft": null, "Bedrooms": 2, "Bathrooms": null, "3BR Min": "Below min", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Disqualified — only 2BR available.", "Open Questions": null, "Date Added": null}, {"Address": "45 Generation Blvd", "Building": null, "Type (A/H)": "A", "Neighbourhood": null, "Quadrant": null, "Status": "Rejected", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Toured. Rooms felt small, too far.", "Open Questions": null, "Date Added": null}, {"Address": "1299 Danforth Rd", "Building": null, "Type (A/H)": null, "Neighbourhood": null, "Quadrant": null, "Status": "Rejected", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Confirmed nothing available for 2 months.", "Open Questions": null, "Date Added": null}, {"Address": "3801 Lawrence", "Building": null, "Type (A/H)": null, "Neighbourhood": null, "Quadrant": null, "Status": "Rejected", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Eliminated — only 1BR and 2BR units.", "Open Questions": null, "Date Added": null}, {"Address": "4866 Bathurst St", "Building": null, "Type (A/H)": "A", "Neighbourhood": "North York — Bathurst/Finch W.", "Quadrant": "NW", "Status": "Awaiting info", "Price /mo": 2930, "Sq Ft": 1112, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "OK", "Promo": "One month rent free", "Realtor Name": "Ariel Menzie", "Realtor Company": "Sterling Karamar Property Management", "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": "Yorkview Public School", "Elementary Snapshot": null, "Intermediate School": "Charles H Best Junior Middle School", "Intermediate Snapshot": null, "Secondary School": "Northview Heights Secondary School", "Secondary Snapshot": null, "Nearest Mosque": "North York Muslim Association", "Mosque Walk Time": "~38 min (2.4 km) ⚠️ over 20 min", "Notes": "~600m from 12 Goldfinch Ct. Catchment schools assumed same as 12 Goldfinch Ct but not yet independently confirmed via TDSB address lookup.", "Open Questions": "Need bedroom/bathroom count from Ariel Menzie.", "Date Added": null}, {"Address": "4900 Bathurst St", "Building": null, "Type (A/H)": "A", "Neighbourhood": "North York — Bathurst/Finch W.", "Quadrant": "NW", "Status": "Awaiting info", "Price /mo": 2825, "Sq Ft": 1112, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "OK", "Promo": "One month rent free", "Realtor Name": "Ariel Menzie", "Realtor Company": "Sterling Karamar Property Management", "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": "Yorkview Public School", "Elementary Snapshot": null, "Intermediate School": "Charles H Best Junior Middle School", "Intermediate Snapshot": null, "Secondary School": "Northview Heights Secondary School", "Secondary Snapshot": null, "Nearest Mosque": "North York Muslim Association", "Mosque Walk Time": "~38 min (2.41 km) ⚠️ over 20 min", "Notes": "~600m from 12 Goldfinch Ct. Catchment schools assumed same as 12 Goldfinch Ct but not yet independently confirmed via TDSB address lookup.", "Open Questions": "Need bedroom/bathroom count from Ariel Menzie.", "Date Added": null}, {"Address": "567 Scarborough Golf Club Rd", "Building": null, "Type (A/H)": "A", "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Concern flagged", "Price /mo": 2895, "Sq Ft": null, "Bedrooms": 3, "Bathrooms": 1.5, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "–", "Promo": "2nd month free, no deposit", "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": "Willow Park Junior Public School", "Elementary Snapshot": null, "Intermediate School": "Tecumseh Senior Public School", "Intermediate Snapshot": null, "Secondary School": "Cedarbrae Collegiate Institute", "Secondary Snapshot": null, "Nearest Mosque": "Scarborough Muslim Cultural Centre", "Mosque Walk Time": "~7 min (0.45 km) ✅ within 20 min", "Notes": "Toured twice. Compelling financial offer (2nd month free, no deposit, hydro-only extra) but elementary catchment (Willow Park) is one of the lowest-scoring in Ontario (1.2/10, 3021/3052) — serious concern despite favourable financials.", "Open Questions": "Confirm exact sq ft. Confirm Tecumseh and Cedarbrae current Fraser scores (Cedarbrae data on file is outdated, from 2012).", "Date Added": "2026-07-03"}, {"Address": "5 Brockley Dr", "Building": null, "Type (A/H)": null, "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Strong lead", "Price /mo": 2950, "Sq Ft": 1100, "Bedrooms": null, "Bathrooms": 2, "3BR Min": "–", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": "Donwood Park Public School", "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": "David and Mary Thomson Collegiate Institute", "Secondary Snapshot": null, "Nearest Mosque": "Masjid Abu Bakr / Jame Abu Bakr Siddique", "Mosque Walk Time": "~3 min (0.21 km) ✅ within 20 min", "Notes": "Toured. Two unit options: Aug 1 (not renovated, water not covered) or Sep 1 (renovated, water coverage unconfirmed). Water and hydro tenant-paid. Strong school catchment — Donwood Park 6.4/10 (above Scarborough average), David & Mary Thomson top ~4-10% in Ontario.", "Open Questions": "Confirm bedroom count (not yet explicitly stated). Confirm which unit to pursue (Aug 1 vs Sep 1) and price/water coverage for each.", "Date Added": "2026-07-03"}, {"Address": "35-41 Danforth Rd", "Building": "The Towns on Danforth — \"The Withrow\" floor plan", "Type (A/H)": "H", "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Rejected", "Price /mo": 2875, "Sq Ft": 1012, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Floor plan received (The Withrow, 1,012 sq ft, 2-storey + 290 sq ft rooftop terrace). Bedroom 3 (8'9\"x6'1\") fails the twin+full bed test badly — too small for a shared kids' room, can barely fit one bed frame end to end. Bedroom 2 (8'3\"x11'6\") also falls short of the ~9'6\"-10' width minimum.", "Open Questions": null, "Date Added": "2026-07-03"}, {"Address": "20 Greencrest Circuit", "Building": null, "Type (A/H)": "A", "Neighbourhood": "Scarborough", "Quadrant": null, "Status": "Rejected", "Price /mo": 2900, "Sq Ft": 1110, "Bedrooms": null, "Bathrooms": 1, "3BR Min": "–", "1.5BA Min": "Below min", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Manager's business card obtained; unit itself not seen. 1 bathroom fails minimum. Best feature is walkable location (No Frills, Shoppers, bank, major bus stops). Household framed as fallback only: \"a no unless I can't find something else.\"", "Open Questions": null, "Date Added": "2026-07-03"}, {"Address": "3000 Victoria Park Ave", "Building": "Warren Court Apartments", "Type (A/H)": "A", "Neighbourhood": "North York — Victoria Park/404", "Quadrant": null, "Status": "Strong lead", "Price /mo": 2500, "Sq Ft": 1120, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": "2 months free (per Ranee.ca, current as of Jul 3 2026 — supersedes earlier \"1 month free\" assumption)", "Realtor Name": "Rosa", "Realtor Company": "Ranee Management", "Realtor Contact": "(416) 494-4310", "Separate Entrance": null, "In-suite Laundry": "Laundry facilities (building-wide, not confirmed in-suite)", "Parking": null, "Toured": false, "Source URL": "https://www.ranee.ca/apartments/3000-victoria-park-ave", "Last Verified": "2026-07-03", "Elementary School": "Ernest Public School", "Elementary Snapshot": null, "Intermediate School": "Pleasant View Middle School", "Intermediate Snapshot": null, "Secondary School": "L'Amoreaux Collegiate Institute", "Secondary Snapshot": null, "Nearest Mosque": "Masjid Al-Faisal (Islamic Society of Willowdale)", "Mosque Walk Time": "~16 min (1.03 km) ✅ within 20 min", "Notes": "Price range $2,500-$2,690, sq ft range 1,093-1,120 (exact unit not pinned down). Water and heat included in rent; electricity usage-based. No further follow-up yet. CONFIRMED as Warren Court Apartments. Unit line: 3BR/2BA, 1,120 sq ft (also cited as 1,093-1,120 sq ft depending on source). Brand new kitchens/baths, granite counters, stainless appliances, stained hardwood, private balcony. Near Hwy 404, on TTC bus route. Floor plan (Warren Court, Line 09, 1,093 sqft) shows: Bedroom 11'5\"x8'3\", Bedroom 11'4\"x9'6\", Bedroom 13'10\"x10'0\" (likely primary) — all three comfortably clear the twin+full bed-fit minimum. 2 full washrooms + walk-in closet + separate storage closet. A second floor plan variant (1,120 sqft) shows a similar 3BR/2BA layout with bedrooms of 13.1 m2, 10.6 m2, 8.9 m2 (~9'x12', ~8'x14', ~7'x13') — worth confirming which exact line/unit is being offered, as dimensions differ somewhat between the two plans. Excellent school catchment: Ernest PS (Gr3 rank 937/3473, top ~27%), Pleasant View MS (Gr6 rank 241/3324, top ~7%), L'Amoreaux CI (rank 56/688, top ~8%) — one of the strongest overall catchments on the list, comparable to the Leaside schools in consistency across all three levels. Screenshot source was Apartments.com but exact listing URL wasn't captured — worth grabbing next time for the Source URL field. CORRECTION from Ranee.ca (management company site, most authoritative source): the standard '3 Bedroom' line is $2,500/mo and is Currently Available — the $2,690 figure used earlier was the top of a third-party-quoted range, not the actual current price. There is also a separate 'Large 3 Bedroom' line at $3,150/mo which is Not Available. Promo is 2 months free (not 1) — supersedes the earlier figure. Utilities: water + heat included, hydro not mentioned (likely tenant-paid, unconfirmed). 3 floor plan PDFs exist on the management site (2BR, 3BR, Large 3BR) — the 3BR PDF matches the Warren Court 1,093 sqft plan already reviewed; the 'Large 3BR' plan hasn't been pulled yet and may be the 1,120 sqft variant. Hanad's estimate: the 'Large 3 Bedroom' line (currently Not Available, no price listed on Ranee.ca) is likely $2,690/mo — this fits, since $2,690 was the figure originally (and mistakenly) applied to the standard 3BR before the Ranee.ca correction. Not yet confirmed directly with the management company — treat as a working estimate, not a confirmed price.", "Open Questions": "Get the 'Large 3 Bedroom' floor plan PDF to see if it's the 1,120 sqft variant, and check if/when it becomes available. Confirm hydro. Confirm in-suite vs shared laundry. Confirm exact price for the 'Large 3 Bedroom' line when it becomes available (estimated ~$2,690).", "Date Added": "2026-07-03"}, {"Address": "2727 Victoria Park Ave", "Building": null, "Type (A/H)": "A", "Neighbourhood": "Toronto — west side", "Quadrant": null, "Status": "Awaiting info", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Masjid Al-Faisal (Islamic Society of Willowdale)", "Mosque Walk Time": "~44 min (2.8 km) ⚠️ over 20 min", "Notes": "Mentioned alongside 3000 Victoria Park Ave as a second west-side option. No further details shared yet.", "Open Questions": null, "Date Added": "2026-07-03"}, {"Address": "3-25 Heron Park Place", "Building": null, "Type (A/H)": "H", "Neighbourhood": "West Hill, Scarborough", "Quadrant": "SE", "Status": "Contender", "Price /mo": 2700, "Sq Ft": null, "Bedrooms": 3, "Bathrooms": 2.5, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": "First Service Residential (condo mgmt)", "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": null, "Elementary School": "Joseph Brant Public School", "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Masjid Syyadina Omar Farookh", "Mosque Walk Time": "~12 min (0.79 km) ✅ within 20 min", "Notes": "Modern 3-storey townhome, underground parking, forced-air gas heat + central A/C. 1,400-1,599 sq ft range (exact unit sq ft not pinned down). Bathrooms: 2 full (3-pc ensuite + 4-pc) + 1 partial/powder = 2.5 total, exceeds minimum. Bedroom 2 (9'1\"x8'0\") and Bedroom 3 (8'1\"x9'0\") are narrowly short of the ~9'6\"-10' twin+full bed-fit minimum (~5-11\" short) — much closer than prior rejects, worth confirming via floor plan/in-person rather than ruling out. School (Joseph Brant, rank 2,026/3,052) is below-average but far better than Willow Park. On market 31 days.", "Open Questions": "Condo/maintenance fees? Reason for 31 days on market — price flexibility? What does \"Basement Type: Other, See Remarks\" mean? Confirm exact sq ft and get room-by-room floor plan for bed-fit confirmation. Utilities included/excluded? Lease term and move-in date?", "Date Added": "2026-07-03"}, {"Address": "238 Galloway Rd (Unit 18)", "Building": "Manor at Highland Creek", "Type (A/H)": "H", "Neighbourhood": "West Hill, Scarborough", "Quadrant": "SE", "Status": "Concern flagged", "Price /mo": 2700, "Sq Ft": 1500, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": "Sasha Bastani (Property.ca) / Dana Lyn Ubakar (PMT Realty)", "Realtor Company": "PMT Realty Inc.", "Realtor Contact": "416-284-1216", "Separate Entrance": null, "In-suite Laundry": "In-suite laundry", "Parking": "2 parking spaces (garage)", "Toured": false, "Source URL": "https://www.realtor.ca/real-estate/29786236/18-238-galloway-road-toronto-west-hill", "Last Verified": "2026-07-03", "Elementary School": "St Margaret's Public School", "Elementary Snapshot": null, "Intermediate School": "St Margaret's Public School", "Intermediate Snapshot": null, "Secondary School": "West Hill Collegiate Institute", "Secondary Snapshot": null, "Nearest Mosque": "Al-Misbah Islamic Centre", "Mosque Walk Time": "~10 min (0.62 km) ✅ within 20 min", "Notes": "CONFIRMED: 238 Galloway Rd and Manors at Highland Creek Unit 18 are the SAME property (MLS# E13157632). Low-rise condo, built 1998, 32 units, 1 storey building. Backs onto private ravine, wooded/ravine lot. Unfinished walkout basement. Maintenance fees cover common element, building insurance, parking (exact $ amount not yet confirmed). Bed-fit test: Primary 11'6\"x14'9\" (master, passes easily); Bedroom 2 8'8\"x12'7\" (passes comfortably); Bedroom 3 7'11\"x10'1\" (passes narrowly, needs floor plan to confirm door/closet clearance). On market 40 days per condos.ca. School catchment is a real concern: St Margaret's PS bottom ~15-20% of Ontario (weak Gr6 math 28%), West Hill CI consistently weak 2.8-4.1/10 across 2007-2017 with no confirmed current score.", "Open Questions": "Confirm exact monthly maintenance fee. Confirm current (2025) Fraser score for West Hill CI. Get full floor plan to verify Bedroom 3 clearance.", "Date Added": "2026-07-03"}, {"Address": "2153 Morningside Ave (Upper)", "Building": null, "Type (A/H)": "H", "Neighbourhood": "Scarborough", "Quadrant": "SE", "Status": "Concern flagged", "Price /mo": 2800, "Sq Ft": 1098, "Bedrooms": 3, "Bathrooms": 2.5, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "Shared laundry (not in-suite)", "Parking": "Yes (private garage)", "Toured": false, "Source URL": "https://condos.ca/toronto/2153-morningside-avenue-scarborough/unit-Upper-E13507388", "Last Verified": "2026-07-04", "Elementary School": "Thomas L Wells Public School", "Elementary Snapshot": null, "Intermediate School": "Thomas L Wells Public School", "Intermediate Snapshot": null, "Secondary School": "Lester B Pearson Collegiate Institute", "Secondary Snapshot": null, "Nearest Mosque": "Islamic Institute of Toronto (IIT)", "Mosque Walk Time": "~17 min ✅ within 20 min", "Notes": "Upper-level unit only, 2-storey, private garage, shared laundry. Tenant responsible for 70% of utilities (unusual split — suggests shared metering with another unit in the building). Possession Sept 1, 2026. PRICE RESOLVED: listing did not state rent directly — back-calculated from \"price per sqm $20.14-$27.45\" against the 102-139 sqm (1,098-1,496 sqft) MLS range; both ends converge on ~$2,800/mo. A 2022 lease record ($2,450 leased, $2,500 listed) is 4 years stale and NOT the current price — do not confuse with today's asking rent. Bed-fit test: Bedroom 2 (11'0\"x9'0\") and Bedroom 3 (9'6\"x8'4\") are both borderline/narrow — tighter than ideal but not a clear fail; confirm in person. School catchment is a genuine split: Thomas L Wells PS is excellent (9.0/10, rank 110/3052, top ~3.6% Ontario) but Lester B Pearson CI carries a serious, well-documented safety history (shootings/lockdowns in 1999, 2015, 2018, 2020 — including a fatality in 2018) that is more severe than any other catchment flagged so far in this search.", "Open Questions": "Confirm exact current rent directly with listing agent (calculated as ~$2,800/mo, not explicitly stated). Confirm exact sq ft. Confirm room dimensions in person for the bed-fit test. Ask why tenant covers 70% (not 50% or 100%) of utilities.", "Date Added": "2026-07-04"}, {"Address": "1650 Sheppard Ave E (Sunrise Tower)", "Building": null, "Type (A/H)": "A", "Neighbourhood": "North York — Don Valley Village", "Quadrant": "NE", "Status": "Rejected", "Price /mo": 2899, "Sq Ft": null, "Bedrooms": 3, "Bathrooms": 1, "3BR Min": "OK", "1.5BA Min": "Below min", "1000sf Min": "–", "Promo": "2 months free", "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "Laundry in building (shared)", "Parking": "0 parking included", "Toured": false, "Source URL": null, "Last Verified": "2026-07-04", "Elementary School": "Dallington Public School", "Elementary Snapshot": null, "Intermediate School": "Woodbine Middle School", "Intermediate Snapshot": null, "Secondary School": "Georges Vanier Secondary School", "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "REJECTED: only 1 bathroom, fails 1.5 bath minimum — same category as 301 Prudential Dr, 20 Greencrest Circuit. Otherwise appealing: 2 months free, heat included, outdoor pool, controlled access, pet-friendly, close to Fairview Mall/TTC. Available June 30, 2026. Did not chase down full school scores given the hard disqualifier — revisit if bathroom minimum is ever reconsidered.", "Open Questions": "None — rejected on hard requirement.", "Date Added": "2026-07-04"}, {"Address": "172 Clonmore Drive", "Building": null, "Type (A/H)": "H", "Neighbourhood": "Birchcliffe-Cliffside, Scarborough", "Quadrant": "SE", "Status": "Rejected", "Price /mo": 2900, "Sq Ft": 1300, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "Ensuite laundry", "Parking": "1 parking + locker (2nd spot rentable)", "Toured": false, "Source URL": null, "Last Verified": "2026-07-07", "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Baitul Mukarram Islamic Society, 3340 Danforth Ave", "Mosque Walk Time": "Not confirmed", "Notes": "Toured in person and rejected: too isolated from schools, grocery, public transport, and work. Bedroom 2 (9'1\"x8'7\") confirmed too small in person, consistent with floor-plan bed-fit concern. Bedroom 3 (10'0\"x8'8\") was workable. New-build condo townhouse, 9.5ft ceilings, rooftop terrace ~300sqft.", "Open Questions": "None — rejected, isolation + room size dealbreakers.", "Date Added": "2026-07-07"}, {"Address": "Parkside Square", "Building": "55 Smooth Rose Ct & 325 Yorkland Blvd", "Type (A/H)": "A", "Neighbourhood": "North York", "Quadrant": "NW", "Status": "Rejected", "Price /mo": null, "Sq Ft": null, "Bedrooms": null, "Bathrooms": null, "3BR Min": "–", "1.5BA Min": "–", "1000sf Min": "–", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": null, "Parking": null, "Toured": false, "Source URL": null, "Last Verified": "2026-07-07", "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "Toured in person and rejected: rooms were tiny/unreasonably small.", "Open Questions": "None — rejected on room size.", "Date Added": "2026-07-07"}, {"Address": "55 Collinsgrove Road 212", "Building": null, "Type (A/H)": "H", "Neighbourhood": "West Hill, Scarborough", "Quadrant": "SE", "Status": "Awaiting info", "Price /mo": 2700, "Sq Ft": 1100, "Bedrooms": 3, "Bathrooms": 2, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": "RE/MAX Community Realty Inc.", "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "1 attached built-in garage + driveway", "Parking": null, "Toured": false, "Source URL": "https://www.maxwellrealty.ca/listing-treb/e13249946-55-collinsgrove-road-212-toronto-e10-on-m1e-4z2/", "Last Verified": "2026-07-11", "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "MLS# E13249946. 2-storey condo townhouse, brick exterior, private driveway + attached built-in garage (1 space). Forced air natural gas heating (confirmed via furnace photo - gas supply line + flue venting visible), central air. Sq ft range 1000-1199 (exact unit tbc). Lower-level versatile room (den/office/possible 4th bedroom) with walkout to private backyard. No fireplace, no basement listed separately (lower level appears to be the walkout room). Near UTSC and Centennial College. Utility estimate (no utilities included, gas forced air + central air): ~$270-490/mo (hydro $100-180, gas $60-130 seasonal, water $50-90, internet $60-90) - est. all-in ~$3,020-3,080/mo. Furnace in listing photos appeared dated/older unit in a worn utility area - flagged to ask realtor about furnace age/service history and request sample gas/hydro bills.", "Open Questions": "Confirm furnace age and service history. Request sample gas/hydro bill from realtor. Confirm exact sq ft within 1000-1199 range. Confirm what utilities (if any) are included in rent. Confirm room dimensions for bed-fit test. School catchment not yet pulled.", "Date Added": "2026-07-11"}, {"Address": "15 Heron Park Place 5", "Building": null, "Type (A/H)": "H", "Neighbourhood": "West Hill, Scarborough", "Quadrant": "SE", "Status": "Awaiting info", "Price /mo": 2600, "Sq Ft": 1500, "Bedrooms": 3, "Bathrooms": 3, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": "RE/MAX Excel Realty Ltd.", "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "1 underground garage", "Parking": null, "Toured": false, "Source URL": null, "Last Verified": "2026-07-11", "Elementary School": null, "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": null, "Notes": "MLS# E13238350. Mattamy-built townhome, 3-storey, brick exterior, Tarion warranty, Energy Star certified. Open concept living/dining/kitchen on main floor. Master bedroom has 4pc ensuite + walk-in closet. 2nd floor laundry. 1 underground garage space. Unfinished basement. Forced air gas heating + central air. Sq ft range 1,400-1,599 (exact unit tbc). 3 full bathrooms (exceeds 1.5 min comfortably). Same general complex as 3-25 Heron Park Place (already on file, different unit/price/bath count) - West Hill, Scarborough. Close to TTC, Heron Park Recreation Centre, UTSC, Centennial College, shopping.", "Open Questions": "Confirm exact sq ft within 1400-1599 range. Confirm room dimensions for bed-fit test. Confirm condo/maintenance fees. Confirm utilities included/excluded. Confirm move-in date. School catchment not yet pulled. Confirm relationship to 3-25 Heron Park Place (same complex, different unit) - worth comparing side by side.", "Date Added": "2026-07-11"}, {"Address": "Warden Ave & Danforth Ave", "Building": null, "Type (A/H)": "H", "Neighbourhood": "Oakridge, Scarborough", "Quadrant": "SE", "Status": "Contender", "Price /mo": 2900, "Sq Ft": 1285, "Bedrooms": 3, "Bathrooms": 1.5, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": "Lisa Maxwell", "Realtor Company": "Harding & King R.E. Services Inc., Brokerage", "Realtor Contact": null, "Separate Entrance": null, "In-suite Laundry": "In-suite laundry", "Parking": "2 spaces (light vehicles)", "Toured": false, "Source URL": null, "Last Verified": "2026-07-12", "Elementary School": "Oakridge Junior Public School", "Elementary Snapshot": null, "Intermediate School": "Samuel Hearne Middle School", "Intermediate Snapshot": "R84% W83% M52%", "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Baitul Mukarram Islamic Society", "Mosque Walk Time": "~3 min (0.17 km) ✅ within 20 min", "Notes": "Main & 2nd floor of a duplex (2nd/3rd floors), rear walk-out to elevated deck, large yard, 5 appliances incl. in-unit washer/dryer, central air + wall unit A/C in master, 2 parking (light vehicles), water-on-demand system. Available Jul 15 / Aug 1. $2,900 + utilities (utilities not yet confirmed — rough estimate ~$210-400/mo depending on heating fuel type, which is not stated in the listing). Elementary: Oakridge Jr PS (JK-4, 10 min walk) — no Fraser score exists (JK-4, structurally excluded, same pattern as Yorkview PS) but self-reported overall rating 9.6/10 (2024), up from 9.1 (2023) and 8.4 (2022) — strong improving trend. Intermediate: Samuel Hearne MS (Gr 5-8, 15 min walk) — Gr6 2024-25 EQAO: Reading 84%, Writing 83% (both solid), Math 52% (weaker, similar pattern to Charles H Best). Secondary school catchment not yet identified — needs TDSB address lookup. Mosque (Baitul Mukarram, 3340 Danforth Ave) is one of the closest on the entire list at ~3 min walk. Description mentions main floor bedrooms have 'counter tops adaptable for students or work-at-home tenants' — possibly smaller desk-nook rooms, worth scrutinizing for the bed-fit test once a floor plan is available.", "Open Questions": "Confirm room dimensions for twin+full bed-fit test (no floor plan yet). Confirm utilities cost and heating fuel type (gas vs electric). Confirm secondary school catchment via TDSB address lookup. Contact Lisa Maxwell (Harding & King) for a viewing.", "Date Added": "2026-07-12"}, {"Address": "96-25 Brimwood Blvd", "Building": null, "Type (A/H)": "A", "Neighbourhood": "Agincourt North, Scarborough", "Quadrant": "NE", "Status": "Concern flagged", "Price /mo": 2850, "Sq Ft": null, "Bedrooms": null, "Bathrooms": 2, "3BR Min": null, "1.5BA Min": "OK", "1000sf Min": null, "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": "(416) 683-4664 (eXp Realty main line)", "Separate Entrance": null, "In-suite Laundry": "In-suite (ensuite laundry)", "Parking": "2 spaces, underground, direct access from basement", "Toured": false, "Source URL": "https://www.zoocasa.com/scarborough-on-real-estate/96-25-brimwood-blvd", "Last Verified": "2026-07-12", "Elementary School": "Brimwood Boulevard Junior Public School", "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": null, "Mosque Walk Time": "~46 min (2.97 km) ⚠️ over 20 min", "Notes": "MLS# E13549360. Condo townhouse, end unit \"like a semi-detached.\" Bedroom count DISPUTED: Zoocasa listing description reads \"3+1 Bedrooms\" (ambiguous — may be 3BR + basement den/flex, same pattern as 856B Millwood Rd), but Hanad separately saw a bedroom-count icon elsewhere indicating 4. Hanad is contacting the agent directly to confirm. Maintenance fee is unusually generous: includes heat, hydro, water, building insurance, condo taxes, cable TV, central air, and parking maintenance. Heat is gas forced air. Listed Jul 10, 2026. School: Brimwood Boulevard Jr PS (JK-6, dual-track French Immersion/English, 10 min walk) — CONCERN: rank 2588/3052 (bottom ~15% of Ontario), and sharply declining — overall rating dropped from 6.6 (2023) to 4.1 (2024), with 48.9% of 2024 tests below provincial standard. FI track feeds into Sir Alexander MacKenzie Sr.; regular English program intermediate/secondary catchment not yet identified. Mosque distance is a second concern: nearest general (Sunni) option, Islamic Foundation of Toronto (441 Nugget Ave), is ~46 min walk; nearest overall, Husainiyah Masjid & Imambargah (different tradition), is ~32 min walk — both well outside the 15-20 min preference.", "Open Questions": "Confirm true bedroom count (3+1 vs 4BR) directly with agent — Hanad is following up. Confirm exact sq ft and room dimensions for bed-fit test. Confirm regular English program intermediate/secondary catchment via TDSB tool.", "Date Added": "2026-07-12"}, {"Address": "Kennedy/Kingston Rd area (address tbc)", "Building": null, "Type (A/H)": "H", "Neighbourhood": "Scarborough — Kingston/Markham Rd area", "Quadrant": "SE", "Status": "Contender", "Price /mo": 2599, "Sq Ft": 1500, "Bedrooms": 3, "Bathrooms": 1.5, "3BR Min": "OK", "1.5BA Min": "OK", "1000sf Min": "OK", "Promo": null, "Realtor Name": null, "Realtor Company": null, "Realtor Contact": "416-265-9804 / 416-731-1195 (individual landlord)", "Separate Entrance": null, "In-suite Laundry": "In-unit laundry (not shared)", "Parking": "2 spaces included", "Toured": false, "Source URL": null, "Last Verified": "2026-07-12", "Elementary School": "George P Mackie Junior Public School", "Elementary Snapshot": null, "Intermediate School": null, "Intermediate Snapshot": null, "Secondary School": null, "Secondary Snapshot": null, "Nearest Mosque": "Muslim Circle of Canada (MCC) Masjid", "Mosque Walk Time": "~5 min (0.34 km) ✅ within 20 min", "Notes": "Main floor of a detached house, partially furnished, 1,500 sq ft, available Sep 1 2026, 1-year lease. Large primary bedroom with attached (ensuite) washroom. Large sunroom + large backyard. Description says \"best for 3 couples or a big family\" and describes an \"upstairs\" within the unit — wording is ambiguous about whether this is a genuinely self-contained 2-level unit or a shared/roommate-style arrangement; needs clarification. Utilities: 50% of the bill is tenant's responsibility — same shared-metering pattern flagged as unusual on 2153 Morningside Ave (70% there); suggests the bill is shared with another unit/tenant in the house. Individual landlord (not an agency). Near Kennedy Station, Hwy 401, Eglinton GO, Centennial College, UTSC. School: George P Mackie Jr PS (JK-6, 7 min walk) — rank 1850/3052 (roughly middle third of Ontario), meaningfully better than Brimwood Blvd (2588/3052) though also declining: 7.8 (2023) to 5.6 (2024). Mosque: MCC Masjid, 3545 Kingston Rd, ~5 min walk — excellent, one of the closest mosque results in the entire search. Confirmed active (five daily prayers, Jumu'ah, Taraweeh, Eid) via mccsmasjid.org.", "Open Questions": "Confirm exact address and whether this is genuinely a self-contained 2-level unit or shared with other tenants. Get a realistic monthly utility estimate given the 50% split. Confirm intermediate/secondary catchment via TDSB tool. Get room dimensions for bed-fit test. Source listing platform/URL not yet captured.", "Date Added": "2026-07-12"}];
+
+function scoreClass(snapshot){
+  if(!snapshot) return 'none';
+  const m = snapshot.match(/Fraser\s+([\d.]+)/);
+  if(m){
+    const v = parseFloat(m[1]);
+    if(v >= 7.5) return 'excellent';
+    if(v >= 5.5) return 'good';
+    if(v >= 3.5) return 'mid';
+    return 'weak';
+  }
+  return 'none';
+}
+
+function reqTick(state){
+  if(state === 'OK') return '<span class="req-tick ok">✓</span>';
+  if(state === 'Below min') return '<span class="req-tick fail">✕</span>';
+  return '<span class="req-tick unk">–</span>';
+}
+
+function statusClass(s){
+  return (s||'').toLowerCase().replace(/\s+/g,'-');
+}
+
+function schoolLine(level, name, snapshot){
+  if(!name) return '';
+  const cls = scoreClass(snapshot);
+  const scoreText = snapshot ? snapshot.replace(/R\d+%\s?W\d+%\s?M\d+%\s?/,'').trim() || snapshot : '—';
+  return `<div class="report-line">
+    <span class="lvl">${level}</span>
+    <span class="mark ${cls}"></span>
+    <span class="name" title="${name}">${name}</span>
+    <span class="score">${scoreText || ''}</span>
+  </div>`;
+}
+
+function money(v){
+  if(v === null || v === undefined || v === '') return '<span class="num dim">—</span>';
+  return `<span class="num">$${Number(v).toLocaleString()}</span>`;
+}
+
+function sqft(v){
+  if(v === null || v === undefined || v === '') return '<span class="num dim">—</span>';
+  return `<span class="num">${Number(v).toLocaleString()}</span>`;
+}
+
+function bedBath(bed, bath){
+  const b = bed ?? '–';
+  const ba = bath ?? '–';
+  return `<span class="num">${b} bd / ${ba} ba</span>`;
+}
+
+function mosqueCell(name, walkTime){
+  if(!name) return '<span class="num dim">—</span>';
+  const isNear = walkTime && walkTime.includes('✅');
+  const cls = isNear ? 'near' : 'far';
+  const timeMatch = (walkTime || '').match(/~?\d+\s*min/);
+  const timeText = timeMatch ? timeMatch[0] : (walkTime || '');
+  return `<div class="mosque-badge"><span class="dot ${cls}"></span><span>${timeText}</span></div><span class="mosque-name" title="${name}">${name}</span>`;
+}
+
+const RANK = {'Strong lead':1, 'Contender':2, 'Concern flagged':3, 'Awaiting info':4, 'Rejected':5};
+
+function rankOf(d){ return RANK[d.Status] ?? 6; }
+
+function mosqueMinutes(walkTime){
+  if(!walkTime) return null;
+  const m = walkTime.match(/(\d+)\s*min/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+function needsAction(d){
+  if(d.Status === 'Rejected') return false;
+  if(d.Status === 'Awaiting info') return true;
+  const oq = (d['Open Questions'] || '').trim();
+  if(oq && !oq.toLowerCase().startsWith('none')) return true;
+  return false;
+}
+
+function bedFitConcern(d){
+  const text = ((d.Notes || '') + ' ' + (d['Open Questions'] || '')).toLowerCase();
+  // Match only language indicating an actual finding, not "test still needed" / "dimensions needed" phrasing
+  return /fails? the (twin|bed)|too small|not big enough|narrowly (fails|short)|falls short|bed width test\b.{0,20}fail|short of the.{0,40}(bed.?fit|minimum)/.test(text);
+}
+
+let sortKey = null;
+let sortDir = 1;
+let activeStatus = 'all';
+let searchTerm = '';
+let hideRejected = true;
+let sortMode = 'priority';
+
+const STATUSES = [...new Set(DATA.map(d => d.Status).filter(Boolean))];
+const STATUS_ORDER = ['Strong lead','Contender','Concern flagged','Awaiting info','Rejected'];
+STATUSES.sort((a,b) => STATUS_ORDER.indexOf(a) - STATUS_ORDER.indexOf(b));
+
+function renderStats(){
+  const counts = {};
+  DATA.forEach(d => counts[d.Status] = (counts[d.Status]||0) + 1);
+  const passAll = DATA.filter(d => d['3BR Min']==='OK' && d['1.5BA Min']==='OK' && d['1000sf Min']==='OK').length;
+  const el = document.getElementById('stats');
+  const items = [
+    {n: DATA.length, l:'Total listings'},
+    {n: counts['Strong lead']||0, l:'Strong leads'},
+    {n: counts['Contender']||0, l:'Contenders'},
+    {n: counts['Concern flagged']||0, l:'Concern flagged'},
+    {n: counts['Rejected']||0, l:'Rejected'},
+    {n: passAll, l:'Pass all 3 minimums'},
+  ];
+  el.innerHTML = items.map(i => `<div class="stat"><span class="n">${i.n}</span><span class="l">${i.l}</span></div>`).join('');
+}
+
+function renderChips(){
+  const el = document.getElementById('statusChips');
+  const all = [{label:'All', value:'all'}, ...STATUSES.map(s => ({label:s, value:s}))];
+  el.innerHTML = all.map(c => `<button class="chip ${c.value===activeStatus?'active':''}" data-status="${c.value}">${c.label}</button>`).join('');
+  el.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      activeStatus = chip.dataset.status;
+      if(activeStatus === 'Rejected' && hideRejected){
+        hideRejected = false;
+        const toggle = document.getElementById('hideRejectedToggle');
+        if(toggle) toggle.classList.remove('active');
+      }
+      renderChips();
+      renderTable();
+    });
+  });
+}
+
+function getFilteredSorted(){
+  let rows = [...DATA];
+  if(activeStatus !== 'all') rows = rows.filter(r => r.Status === activeStatus);
+  if(hideRejected) rows = rows.filter(r => r.Status !== 'Rejected');
+
+  if(searchTerm.trim()){
+    const term = searchTerm.trim().toLowerCase();
+    rows = rows.filter(r =>
+      (r.Address || '').toLowerCase().includes(term) ||
+      (r.Building || '').toLowerCase().includes(term) ||
+      (r.Neighbourhood || '').toLowerCase().includes(term)
+    );
+  }
+
+  const sqftMin = document.getElementById('sqftFilter').value;
+  if(sqftMin !== 'all') rows = rows.filter(r => (r['Sq Ft']||0) >= parseInt(sqftMin));
+
+  const reqState = document.getElementById('reqFilter').value;
+  if(reqState === 'allok') rows = rows.filter(r => r['3BR Min']==='OK' && r['1.5BA Min']==='OK' && r['1000sf Min']==='OK');
+  if(reqState === 'anyfail') rows = rows.filter(r => r['3BR Min']==='Below min' || r['1.5BA Min']==='Below min' || r['1000sf Min']==='Below min');
+
+  const actionState = document.getElementById('actionFilter').value;
+  if(actionState === 'needsaction') rows = rows.filter(r => needsAction(r));
+
+  const quadrant = document.getElementById('quadrantFilter').value;
+  if(quadrant !== 'all') rows = rows.filter(r => r.Quadrant === quadrant);
+
+  const mosqueMax = document.getElementById('mosqueFilter').value;
+  if(mosqueMax !== 'all'){
+    const maxMin = parseInt(mosqueMax, 10);
+    rows = rows.filter(r => {
+      const m = mosqueMinutes(r['Mosque Walk Time']);
+      return m !== null && m <= maxMin;
+    });
+  }
+
+  const bedFitState = document.getElementById('bedFitFilter').value;
+  if(bedFitState === 'concern') rows = rows.filter(r => bedFitConcern(r));
+  if(bedFitState === 'clean') rows = rows.filter(r => !bedFitConcern(r));
+
+  if(sortKey){
+    // Manual column-header sort takes precedence when active
+    rows.sort((a,b) => {
+      let av = a[sortKey], bv = b[sortKey];
+      if(av === null || av === undefined) av = sortKey === 'Address' ? '' : -Infinity;
+      if(bv === null || bv === undefined) bv = sortKey === 'Address' ? '' : -Infinity;
+      if(typeof av === 'string') av = av.toLowerCase();
+      if(typeof bv === 'string') bv = bv.toLowerCase();
+      if(av < bv) return -1 * sortDir;
+      if(av > bv) return 1 * sortDir;
+      return 0;
+    });
+  } else {
+    rows.sort((a,b) => {
+      switch(sortMode){
+        case 'priority': {
+          const d = rankOf(a) - rankOf(b);
+          if(d !== 0) return d;
+          return (a.Address||'').localeCompare(b.Address||'');
+        }
+        case 'price-asc': {
+          const av = a['Price /mo'] ?? Infinity, bv = b['Price /mo'] ?? Infinity;
+          return av - bv;
+        }
+        case 'price-desc': {
+          const av = a['Price /mo'] ?? -Infinity, bv = b['Price /mo'] ?? -Infinity;
+          return bv - av;
+        }
+        case 'sqft-desc': {
+          const av = a['Sq Ft'] ?? -Infinity, bv = b['Sq Ft'] ?? -Infinity;
+          return bv - av;
+        }
+        case 'mosque-asc': {
+          const av = mosqueMinutes(a['Mosque Walk Time']) ?? Infinity;
+          const bv = mosqueMinutes(b['Mosque Walk Time']) ?? Infinity;
+          return av - bv;
+        }
+        case 'verified-asc': {
+          const av = a['Last Verified'] || '9999-99-99';
+          const bv = b['Last Verified'] || '9999-99-99';
+          return av.localeCompare(bv);
+        }
+        case 'added-desc': {
+          const av = a['Date Added'] || '0000-00-00';
+          const bv = b['Date Added'] || '0000-00-00';
+          return bv.localeCompare(av);
+        }
+        case 'address-asc':
+          return (a.Address||'').localeCompare(b.Address||'');
+        default:
+          return 0;
+      }
+    });
+  }
+  return rows;
+}
+
+function renderTable(){
+  const rows = getFilteredSorted();
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = rows.map(d => {
+    const notesFull = (d.Notes || '').trim();
+    const truncated = notesFull.length > 110 ? notesFull.slice(0,108) + '…' : notesFull;
+    const needsToggle = notesFull.length > 110;
+    const typeTag = d['Type (A/H)'] ? `<span class="type-tag">${d['Type (A/H)']}</span>` : '';
+
+    return `<tr>
+      <td>
+        <div class="addr">${d.Address} ${typeTag}${d.Building ? `<span class="building">${d.Building}</span>` : ''}</div>
+        ${d['Source URL'] ? `<a class="src-link" href="${d['Source URL']}" target="_blank" rel="noopener">Original listing ↗</a>` : ''}
+      </td>
+      <td><span class="badge ${statusClass(d.Status)}">${d.Status || '—'}</span>${needsAction(d) ? '<span class="badge action-badge">Needs action</span>' : ''}${bedFitConcern(d) ? '<span class="badge bedfit-badge">Bed-fit concern</span>' : ''}</td>
+      <td>${money(d['Price /mo'])}</td>
+      <td>${sqft(d['Sq Ft'])}</td>
+      <td>${bedBath(d.Bedrooms, d.Bathrooms)}</td>
+      <td><div class="req">${reqTick(d['3BR Min'])}${reqTick(d['1.5BA Min'])}${reqTick(d['1000sf Min'])}</div></td>
+      <td><div class="neigh">${d.Neighbourhood || '—'}</div></td>
+      <td><span class="num dim">${d['Date Added'] || '—'}</span></td>
+      <td>
+        <div class="report-strip">
+          ${schoolLine('EL', d['Elementary School'], d['Elementary Snapshot'])}
+          ${schoolLine('INT', d['Intermediate School'], d['Intermediate Snapshot'])}
+          ${schoolLine('SEC', d['Secondary School'], d['Secondary Snapshot'])}
+        </div>
+      </td>
+      <td>${mosqueCell(d['Nearest Mosque'], d['Mosque Walk Time'])}</td>
+      <td class="col-notes">
+        <div class="notes-cell ${needsToggle ? 'expandable' : ''}" ${needsToggle ? 'onclick="this.classList.toggle(\'open\')"' : ''}>
+          <span class="truncated">${truncated}</span>
+          <span class="full">${notesFull}</span>
+          ${needsToggle ? '<div class="more">Show more / less</div>' : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const hiddenNote = hideRejected ? ' (rejected hidden)' : '';
+  document.getElementById('countNote').textContent = `${rows.length} of ${DATA.length} shown${hiddenNote}`;
+}
+
+document.querySelectorAll('thead th[data-key]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if(sortKey === key){ sortDir *= -1; } else { sortKey = key; sortDir = 1; }
+    document.querySelectorAll('thead th').forEach(t => t.classList.remove('sorted'));
+    th.classList.add('sorted');
+    th.querySelector('.arrow').textContent = sortDir === 1 ? '↑' : '↓';
+    renderTable();
+  });
+});
+
+document.getElementById('sqftFilter').addEventListener('change', renderTable);
+document.getElementById('reqFilter').addEventListener('change', renderTable);
+document.getElementById('actionFilter').addEventListener('change', renderTable);
+document.getElementById('quadrantFilter').addEventListener('change', renderTable);
+document.getElementById('mosqueFilter').addEventListener('change', renderTable);
+document.getElementById('bedFitFilter').addEventListener('change', renderTable);
+
+document.getElementById('sortSelect').addEventListener('change', (e) => {
+  sortMode = e.target.value;
+  // dropdown sort takes over — clear any manual column-header sort
+  sortKey = null;
+  document.querySelectorAll('thead th').forEach(t => {
+    t.classList.remove('sorted');
+    const arrow = t.querySelector('.arrow');
+    if(arrow) arrow.textContent = '↕';
+  });
+  renderTable();
+});
+
+document.getElementById('hideRejectedToggle').addEventListener('click', (e) => {
+  hideRejected = !hideRejected;
+  e.target.classList.toggle('active', hideRejected);
+  renderChips();
+  renderTable();
+});
+
+const searchBox = document.getElementById('searchBox');
+const searchHint = document.getElementById('searchHint');
+searchBox.addEventListener('input', () => {
+  searchTerm = searchBox.value;
+  const term = searchTerm.trim().toLowerCase();
+  if(!term){
+    searchHint.textContent = '';
+    searchBox.classList.remove('has-match','no-match');
+  } else {
+    const matches = DATA.filter(d =>
+      (d.Address || '').toLowerCase().includes(term) ||
+      (d.Building || '').toLowerCase().includes(term) ||
+      (d.Neighbourhood || '').toLowerCase().includes(term)
+    );
+    if(matches.length){
+      searchBox.classList.add('has-match'); searchBox.classList.remove('no-match');
+      const names = matches.slice(0,3).map(m => m.Address).join(', ');
+      searchHint.textContent = `Already tracked: ${names}${matches.length > 3 ? ` +${matches.length-3} more` : ''}`;
+      searchHint.className = 'search-hint found';
+    } else {
+      searchBox.classList.add('no-match'); searchBox.classList.remove('has-match');
+      searchHint.textContent = 'No match — looks like a new listing';
+      searchHint.className = 'search-hint notfound';
+    }
+  }
+  renderTable();
+});
+
+renderStats();
+renderChips();
+renderTable();
+</script>
+
+</body>
+</html>
